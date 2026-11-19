@@ -59,9 +59,19 @@ fun AddOtpScreen(
         ExposedDropdownMenuBox(expanded = serviceMenuOpen, onExpandedChange = { serviceMenuOpen = it }) {
             OutlinedTextField(
                 value = serviceQuery.ifBlank { selectedService?.name ?: "" },
-                onValueChange = { serviceQuery = it; serviceMenuOpen = true },
+                onValueChange = { q ->
+                    serviceQuery = q; serviceMenuOpen = true
+                    // Typing the full service name (e.g. "bKash") selects it immediately.
+                    services.firstOrNull { it.name.equals(q.trim(), ignoreCase = true) }?.let { match ->
+                        viewModel.update { it.copy(serviceId = match.id) }
+                    }
+                },
                 label = { Text(stringResource(R.string.service)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = serviceMenuOpen) },
+                isError = state.error == "service",
+                supportingText = {
+                    if (state.error == "service") Text(stringResource(R.string.error_select_service))
+                },
                 modifier = Modifier.fillMaxWidth().menuAnchor()
             )
             ExposedDropdownMenu(expanded = serviceMenuOpen, onDismissRequest = { serviceMenuOpen = false }) {
@@ -138,7 +148,21 @@ fun AddOtpScreen(
             )
         }
 
-        Button(onClick = viewModel::save, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = {
+                // If the user typed a service name by hand without tapping the
+                // dropdown item, resolve it now (exact match or a single
+                // filtered result) so Save never fails silently.
+                if (state.serviceId == null) {
+                    val q = serviceQuery.trim()
+                    val match = services.firstOrNull { it.name.equals(q, ignoreCase = true) }
+                        ?: services.filter { it.name.contains(q, ignoreCase = true) }.singleOrNull()
+                    if (match != null) viewModel.update { it.copy(serviceId = match.id) }
+                }
+                viewModel.save()
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(stringResource(R.string.save_otp))
         }
     }

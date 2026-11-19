@@ -107,6 +107,7 @@
     <string name="created_at">তৈরি</string>
     <string name="expires_at">মেয়াদ শেষ</string>
     <string name="duplicate_warning">এই সার্ভিসের জন্য একই ধরনের OTP ইতিমধ্যে আছে।</string>
+    <string name="error_select_service">তালিকা থেকে একটি সার্ভিস বেছে নিন</string>
     <string name="invalid_otp">সঠিক OTP দিন (৪-১০ অক্ষর)।</string>
     <string name="invalid_phone">সঠিক ফোন নম্বর দিন।</string>
     <string name="five_min">৫ মিনিট</string>

@@ -107,6 +107,7 @@
     <string name="created_at">Created</string>
     <string name="expires_at">Expires</string>
     <string name="duplicate_warning">A similar OTP already exists for this service.</string>
+    <string name="error_select_service">Please choose a service from the list</string>
     <string name="invalid_otp">Enter a valid OTP (4-10 characters).</string>
     <string name="invalid_phone">Enter a valid phone number.</string>
     <string name="five_min">5 minutes</string>
