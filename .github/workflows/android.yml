@@ -29,3 +29,19 @@ jobs:
         with:
           name: otp-vault-debug
           path: app/build/outputs/apk/debug/*.apk
+      - name: Decode release keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/otp-vault-release.p12"
+      - name: Build signed release APK
+        env:
+          RELEASE_STORE_FILE: ${{ runner.temp }}/otp-vault-release.p12
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --stacktrace
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: otp-vault-release
+          path: app/build/outputs/apk/release/*.apk
