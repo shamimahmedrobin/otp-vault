@@ -20,14 +20,30 @@ android {
         vectorDrawables { useSupportLibrary = true }
     }
 
+    // Release signing comes from environment variables when present
+    // (CI decodes a keystore from GitHub Secrets; see README). When they are
+    // absent the release build stays unsigned instead of falling back to the
+    // debug key.
+    val releaseStoreFile = System.getenv("RELEASE_STORE_FILE")
+    signingConfigs {
+        if (releaseStoreFile != null) {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+                keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+                keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Signing is read from environment / keystore.properties when present.
-            // See README "Signed APK build instructions". Debug signing is never
-            // used for release when a release keystore is configured.
+            if (releaseStoreFile != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
         debug {
             isMinifyEnabled = false
