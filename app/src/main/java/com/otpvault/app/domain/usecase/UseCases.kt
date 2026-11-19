@@ -1,11 +1,13 @@
 package com.otpvault.app.domain.usecase
 
+import javax.inject.Inject
+
 import com.otpvault.app.domain.model.ExpiryOption
 import com.otpvault.app.domain.model.OtpItem
 import com.otpvault.app.domain.repository.OtpRepository
 import com.otpvault.app.domain.repository.ServiceRepository
 
-class AddOtpUseCase(private val repo: OtpRepository) {
+class AddOtpUseCase @Inject constructor(private val repo: OtpRepository) {
     suspend operator fun invoke(
         serviceId: String, phone: String?, code: String, note: String?,
         expiry: ExpiryOption, customMinutes: Int? = null
@@ -16,10 +18,10 @@ class AddOtpUseCase(private val repo: OtpRepository) {
     }
 }
 
-class CleanupExpiredUseCase(private val repo: OtpRepository) {
+class CleanupExpiredUseCase @Inject constructor(private val repo: OtpRepository) {
     suspend operator fun invoke(): Int = repo.cleanupExpired()
 }
 
-class SeedServicesUseCase(private val repo: ServiceRepository) {
+class SeedServicesUseCase @Inject constructor(private val repo: ServiceRepository) {
     suspend operator fun invoke() = repo.seedDefaults()
 }

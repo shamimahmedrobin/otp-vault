@@ -76,6 +76,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    // Real org.json for JVM unit tests (the android.jar copy is a stub that throws).
+    testImplementation("org.json:json:20231013")
     testImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
