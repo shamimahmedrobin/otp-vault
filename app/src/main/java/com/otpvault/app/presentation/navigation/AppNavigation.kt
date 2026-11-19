@@ -167,8 +167,8 @@ fun AppNavigation(authViewModel: AuthViewModel = hiltViewModel()) {
             }
             composable(Routes.BIOMETRIC) {
                 BiometricSetupScreen(
-                    onEnable = { navController.navigate(Routes.HOME) { popUpTo(0) { inclusive = true } } },
-                    onSkip = { navController.navigate(Routes.HOME) { popUpTo(0) { inclusive = true } } }
+                    onEnable = { navController.navigate(Routes.HOME) { popUpTo(navController.graph.id) { inclusive = true } } },
+                    onSkip = { navController.navigate(Routes.HOME) { popUpTo(navController.graph.id) { inclusive = true } } }
                 )
             }
             composable(Routes.UNLOCK) {
@@ -179,7 +179,7 @@ fun AppNavigation(authViewModel: AuthViewModel = hiltViewModel()) {
                     error = error,
                     onPinComplete = { pin ->
                         if (authViewModel.unlockWithPin(pin)) {
-                            navController.navigate(Routes.HOME) { popUpTo(0) { inclusive = true } }
+                            navController.navigate(Routes.HOME) { popUpTo(navController.graph.id) { inclusive = true } }
                         } else {
                             attempts++
                             error = context.getString(R.string.pin_wrong)
@@ -192,7 +192,7 @@ fun AppNavigation(authViewModel: AuthViewModel = hiltViewModel()) {
                         BiometricHelper.authenticate(activity, "OTP Vault", context.getString(R.string.use_biometric),
                             onSuccess = {
                                 authViewModel.unlockWithBiometric()
-                                navController.navigate(Routes.HOME) { popUpTo(0) { inclusive = true } }
+                                navController.navigate(Routes.HOME) { popUpTo(navController.graph.id) { inclusive = true } }
                             },
                             onError = { })
                     }

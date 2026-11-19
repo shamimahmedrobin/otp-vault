@@ -28,7 +28,11 @@ data class EncryptedData(val cipherText: ByteArray, val iv: ByteArray) {
 class CryptoManager(
     private val keyAlias: String = DEFAULT_ALIAS
 ) {
-    private val keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
+    // Lazy: constructing CryptoManager must not touch the Android Keystore,
+    // so the explicit-key paths stay usable in plain JVM unit tests.
+    private val keyStore: KeyStore by lazy {
+        KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
+    }
 
     fun encrypt(plainText: String): EncryptedData {
         val cipher = Cipher.getInstance(TRANSFORMATION)

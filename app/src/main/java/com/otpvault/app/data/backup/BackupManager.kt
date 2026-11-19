@@ -125,18 +125,20 @@ class BackupManager(
     }
 
     /** Returns null when the password is wrong or the file is corrupted. */
-    fun decryptBackup(data: ByteArray, password: CharArray): ByteArray? = try {
-        if (data.size < MAGIC.size + 16 + 12 + 16) return null
-        if (!data.copyOfRange(0, MAGIC.size).contentEquals(MAGIC)) return null
-        val salt = data.copyOfRange(MAGIC.size, MAGIC.size + 16)
-        val iv = data.copyOfRange(MAGIC.size + 16, MAGIC.size + 28)
-        val cipherText = data.copyOfRange(MAGIC.size + 28, data.size)
-        val key = SecretKeySpec(PasswordKdf.derive(password, salt), "AES")
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, iv))
-        cipher.doFinal(cipherText)
-    } catch (e: Exception) {
-        null
+    fun decryptBackup(data: ByteArray, password: CharArray): ByteArray? {
+        return try {
+            if (data.size < MAGIC.size + 16 + 12 + 16) return null
+            if (!data.copyOfRange(0, MAGIC.size).contentEquals(MAGIC)) return null
+            val salt = data.copyOfRange(MAGIC.size, MAGIC.size + 16)
+            val iv = data.copyOfRange(MAGIC.size + 16, MAGIC.size + 28)
+            val cipherText = data.copyOfRange(MAGIC.size + 28, data.size)
+            val key = SecretKeySpec(PasswordKdf.derive(password, salt), "AES")
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, iv))
+            cipher.doFinal(cipherText)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     companion object {
